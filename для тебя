@@ -1,0 +1,95 @@
+<script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const screen1 = document.getElementById('screen1');
+        const screen2 = document.getElementById('screen2');
+        
+        let yesScale = 1;
+        let isFirstMove = true;
+
+        // Функция убегания кнопки "Нет"
+        function moveNoButton() {
+            // Отрываем кнопку от обычного расположения при первом касании
+            if (isFirstMove) {
+                noBtn.style.position = 'fixed';
+                isFirstMove = false;
+            }
+
+            // Вычисляем безопасную зону, чтобы кнопка не улетала за края экрана телефона
+            const padding = 20;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            
+            // Случайные координаты на экране
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            
+            // Перемещаем кнопку
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            
+            // Увеличиваем кнопку "Да", чтобы на нее хотелось нажать
+            yesScale += 0.2;
+            // Ограничиваем рост, чтобы она не стала гигантской и не закрыла весь экран
+            if (yesScale > 2.2) yesScale = 2.2; 
+            yesBtn.style.transform = scale(${yesScale});
+        }
+
+        // Для компьютеров (когда мышка наводится)
+        noBtn.addEventListener('mouseover', moveNoButton);
+        
+        // Для ТЕЛЕФОНОВ (когда палец касается экрана)
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Запрещаем стандартный клик
+            moveNoButton();
+        }, { passive: false });
+        
+        // На случай, если каким-то чудом удалось кликнуть
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        function createHearts() {
+            // Каждые 150 миллисекунд создаем новое сердечко
+            const heartInterval = setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-float');
+                
+                // Разные эмодзи для красоты
+                const hearts = ['❤️', '💖', '💗', '💓', '💞', '💘', '💕', '✨'];
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                
+                // Рандомная позиция, размер и скорость полета
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's'; // 3 - 5 секунд
+                const size = Math.random() * 1.5 + 1; 
+                heart.style.fontSize = size + 'rem';
+                
+                screen2.appendChild(heart);
+                
+                // Удаляем сердечко, когда оно улетело, чтобы телефон не вис
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 150); 
+        }
+
+        yesBtn.addEventListener('click', () => {
+            // Скрываем первый экран
+            screen1.classList.add('hidden');
+            screen1.classList.remove('flex');
+            
+            // Показываем финальный экран
+            screen2.classList.remove('hidden');
+            screen2.classList.add('flex');
+            
+            // Запускаем салют из сердечек!
+            createHearts();
+        });
+    </script>
+</body>
+</html>
